@@ -579,7 +579,140 @@ def analyze_medical_image_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint."""
+    return jsonify({"status": "healthy", "timestamp": str(os.path.getmtime(__file__))}), 200
 
+def analyze_medical_report(report_path):
+    """Analyze medical reports (lab tests, pathology, etc.) using Gemini model."""
+    try:
+        image = Image.open(report_path)
+        
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+        
+        prompt = """
+        You are an expert medical report analyzer. Analyze the provided medical report image (which could be 
+        a lab test, blood work, pathology report, etc.) and extract all relevant information.
+
+        Focus on:
+        1. Identifying all test parameters and their values
+        2. Highlighting abnormal values (too high or too low)
+        3. Providing a brief interpretation of what the abnormal values might indicate
+        4. Suggesting follow-up actions if necessary
+
+        Provide your analysis in a structured JSON format with the following fields:
+        1. report_type: The type of medical report (e.g., "Complete Blood Count", "Comprehensive Metabolic Panel", etc.)
+        2. patient_info: Any patient information visible in the report
+        3. test_date: The date when the test was conducted
+        4. parameters: An array of test parameters, where each parameter has:
+           - name: Parameter name
+           - value: Parameter value
+           - unit: Unit of measurement
+           - reference_range: Normal reference range
+           - status: "normal", "high", or "low"
+        5. abnormal_findings: Array of objects containing:
+           - parameter: The abnormal parameter name
+           - interpretation: Brief medical interpretation
+           - severity: "mild", "moderate", or "severe"
+        6. summary: A brief summary of the overall report findings
+        7. recommendations: Array of follow-up recommendations
+
+        Format your response as valid JSON following this schema:
+        
+        {
+            "report_type": "string",
+            "patient_info": {
+                "name": "string",
+                "id": "string",
+                "age": "string",
+                "gender": "string"
+            },
+            "test_date": "string",
+            "parameters": [
+                {
+                    "name": "string",
+                    "value": number,
+                    "unit": "string",
+                    "reference_range": "string",
+                    "status": "string"
+                }
+            ],
+            "abnormal_findings": [
+                {
+                    "parameter": "string",
+                    "interpretation": "string",
+                    "severity": "string"
+                }
+            ],
+            "summary": "string",
+            "recommendations": ["string"]
+        }
+        
+        IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. 
+        Do not include any explanations outside the JSON structure.
+        """
+
+        response = model.generate_content([prompt, image], generation_config={"temperature": 0.2})
+
+        text_response = response.text
+
+        json_start = text_response.find('{')
+        json_end = text_response.rfind('}') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            json_str = text_response[json_start:json_end]
+  
+            json_str = json_str.replace('```json', '').replace('```', '')
+            result = json.loads(json_str)
+            return result
+        else:
+            return {
+                "report_type": "Unknown",
+                "parameters": [],
+                "abnormal_findings": [],
+                "summary": "Failed to analyze report",
+                "recommendations": ["Please consult with a healthcare professional"]
+            }
+    except Exception as e:
+        print(f"Error analyzing medical report: {str(e)}")
+        return {
+            "report_type": "Error",
+            "parameters": [],
+            "abnormal_findings": [],
+            "summary": f"Error analyzing report: {str(e)}",
+            "recommendations": ["Please consult with a healthcare professional"]
+        }
+
+@app.route('/api/analyze_medical_report', methods=['POST'])
+def analyze_medical_report_endpoint():
+    """API endpoint to analyze uploaded medical report images."""
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part in the request"}), 400
+            
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+            
+        if file:
+ 
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            try:
+                result = analyze_medical_report(filepath)
+                return jsonify(result)
+            except Exception as e:
+                return jsonify({"error": str(e)}), 500
+            finally:
+              
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
 if __name__ == "__main__":
     # Set host to 0.0.0.0 to make it accessible from outside the container
