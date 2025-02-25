@@ -181,8 +181,333 @@ const Prescription=() =>{
       alert("Please enter at least one symptom or upload a medical image.");
       return;
     }
-    processAnalysis();
+    processDiagnostic();
   };
+
+  // Add symptom to list
+  const addSymptom = (e) => {
+    if (e.key === 'Enter' && e.target.value.trim() !== '') {
+      setSymptoms([...symptoms, e.target.value.trim()]);
+      e.target.value = '';
+    }
+  };
+  
+  // Remove symptom from list
+  const removeSymptom = (symptomToRemove) => {
+    setSymptoms(symptoms.filter(s => s !== symptomToRemove));
+  };
+  
+  // Toggle image enhancement option
+  const toggleEnhancement = (option) => {
+    setImageEnhancementOptions({
+      ...imageEnhancementOptions,
+      [option]: !imageEnhancementOptions[option]
+    });
+  };
+  
+  // Reset prescription form
+  const resetPrescriptionForm = () => {
+    setPrescriptionResults(null);
+    setPrescriptionFile(null);
+    // Clear preview URL to prevent memory leaks
+    if (prescriptionPreview) {
+      URL.revokeObjectURL(prescriptionPreview);
+      setPrescriptionPreview(null);
+    }
+  };
+  
+  // Reset diagnostic form
+  const resetDiagnosticForm = () => {
+    setDiagnosticResults(null);
+    setMedicalImageFile(null);
+    setSymptoms([]);
+    setImageEnhancementOptions({
+      contrastBoost: false,
+      noiseReduction: false,
+      edgeEnhancement: false
+    });
+    // Clear preview URL to prevent memory leaks
+    if (medicalImagePreview) {
+      URL.revokeObjectURL(medicalImagePreview);
+      setMedicalImagePreview(null);
+    }
+  };
+  
+  // Show disease details in a modal
+  const showDiseaseDetails = (disease) => {
+    setSelectedDisease(disease);
+    setShowDiseaseModal(true);
+  };
+  
+  // Show medication details in a modal
+  const showMedicationDetails = (medication) => {
+    setModalMedication(medication);
+    setShowInteractionModal(true);
+  };
+  
+  // Generate a PDF report content
+  const generateReportContent = () => {
+    if (!prescriptionResults) return '';
+    
+    let content = '';
+    
+    // Patient information
+    content += `Prescription Report\n`;
+    content += `Generated on: ${new Date().toLocaleDateString()}\n\n`;
+    content += `PATIENT INFORMATION\n`;
+    content += `Name: ${prescriptionResults.patient}\n`;
+    if (prescriptionResults.patientAge) content += `Age: ${prescriptionResults.patientAge} years\n`;
+    if (prescriptionResults.patientGender) content += `Gender: ${prescriptionResults.patientGender}\n\n`;
+    
+    // Doctor information
+    content += `DOCTOR INFORMATION\n`;
+    content += `Name: ${prescriptionResults.doctor || 'Not specified'}\n`;
+    content += `License: ${prescriptionResults.doctorLicense || 'Not specified'}\n\n`;
+    
+    // Prescription details
+    content += `PRESCRIPTION DETAILS\n`;
+    content += `Date: ${prescriptionResults.date || 'Not specified'}\n\n`;
+    
+    // Medications
+    content += `MEDICATIONS\n`;
+    prescriptionResults.medications.forEach((med, index) => {
+      content += `${index + 1}. ${med.name} ${med.dosage}\n`;
+      content += `   Instructions: ${med.instructions}\n`;
+      content += `   Duration: ${med.quantity}\n\n`;
+    });
+    
+    // Possible diseases
+    if (prescriptionResults.possibleDiseases && prescriptionResults.possibleDiseases.length > 0) {
+      content += `POSSIBLE CONDITIONS\n`;
+      prescriptionResults.possibleDiseases.forEach((disease, index) => {
+        content += `${index + 1}. ${disease.name} (Probability: ${disease.probability})\n`;
+        content += `   Description: ${disease.description}\n`;
+        content += `   Type: ${disease.type}\n`;
+        content += `   Key Symptoms: ${disease.symptoms.join(', ')}\n\n`;
+      });
+    }
+    
+    // Drug interactions
+    if (prescriptionResults.drugInteractions && prescriptionResults.drugInteractions.length > 0) {
+      content += `DRUG INTERACTIONS\n`;
+      prescriptionResults.drugInteractions.forEach((interaction, index) => {
+        content += `${index + 1}. ${interaction.drugs.join(' + ')} - ${interaction.severity} severity\n`;
+        content += `   Effect: ${interaction.effect}\n`;
+        content += `   Recommendation: ${interaction.recommendation}\n\n`;
+      });
+    }
+    
+    // Additional notes
+    if (prescriptionResults.additionalNotes) {
+      content += `ADDITIONAL NOTES\n`;
+      content += `${prescriptionResults.additionalNotes}\n\n`;
+    }
+    
+    content += `This report should be reviewed by a healthcare professional.`;
+    
+    return content;
+  };
+  
+  // Download report as a text file
+  const downloadReport = () => {
+    const content = generateReportContent();
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Arogya_Report_${new Date().toISOString().slice(0, 10)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    setShowPrintModal(false);
+  };
+  // Print report
+  const printReport = () => {
+    const content = generateReportContent();
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+    <html>
+    <head>
+      <title>Arogya Prescription Report</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.5;
+          margin: 30px;
+          color: #000;
+        }
+        h1, h2 {
+          color: #000;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+          border-bottom: 2px solid #000;
+          padding-bottom: 10px;
+        }
+        .section {
+          margin-bottom: 25px;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 15px;
+        }
+        table, th, td {
+          border: 1px solid #000;
+        }
+        th {
+          background-color: #f2f2f2;
+          text-align: left;
+          padding: 8px;
+          font-weight: bold;
+        }
+        td {
+          padding: 8px;
+        }
+        .footer {
+          margin-top: 40px;
+          padding-top: 10px;
+          border-top: 1px solid #000;
+          font-size: 12px;
+          text-align: center;
+        }
+        @media print {
+          body {
+            margin: 0.5in;
+          }
+          .no-break {
+            page-break-inside: avoid;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>Arogya Prescription Report</h1>
+        <p>Generated on: ${new Date().toLocaleDateString()}</p>
+      </div>
+      
+      <div class="section">
+        <h2>PATIENT & DOCTOR INFORMATION</h2>
+        <table>
+          <tr>
+            <th style="width: 50%">Patient Details</th>
+            <th style="width: 50%">Doctor Details</th>
+          </tr>
+          <tr>
+            <td>
+              <strong>Name:</strong> ${prescriptionResults.patient}<br>
+              ${prescriptionResults.patientAge ? `<strong>Age:</strong> ${prescriptionResults.patientAge} years<br>` : ''}
+              ${prescriptionResults.patientGender ? `<strong>Gender:</strong> ${prescriptionResults.patientGender}` : ''}
+            </td>
+            <td>
+              <strong>Name:</strong> ${prescriptionResults.doctor || 'Not specified'}<br>
+              <strong>License:</strong> ${prescriptionResults.doctorLicense || 'Not specified'}<br>
+              <strong>Date:</strong> ${prescriptionResults.date || 'Not specified'}
+            </td>
+          </tr>
+        </table>
+      </div>
+      
+      <div class="section no-break">
+        <h2>MEDICATIONS</h2>
+        <table>
+          <tr>
+            <th style="width: 5%">No.</th>
+            <th style="width: 25%">Medication</th>
+            <th style="width: 20%">Dosage</th>
+            <th style="width: 35%">Instructions</th>
+            <th style="width: 15%">Duration</th>
+          </tr>
+          ${prescriptionResults.medications.map((med, index) => `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${med.name}</td>
+              <td>${med.dosage}</td>
+              <td>${med.instructions}</td>
+              <td>${med.quantity}</td>
+            </tr>
+          `).join('')}
+        </table>
+      </div>
+      
+      ${prescriptionResults.possibleDiseases && prescriptionResults.possibleDiseases.length > 0 ? `
+        <div class="section no-break">
+          <h2>POSSIBLE CONDITIONS</h2>
+          <table>
+            <tr>
+              <th style="width: 5%">No.</th>
+              <th style="width: 20%">Condition</th>
+              <th style="width: 10%">Probability</th>
+              <th style="width: 25%">Description</th>
+              <th style="width: 10%">Type</th>
+              <th style="width: 30%">Key Symptoms</th>
+            </tr>
+            ${prescriptionResults.possibleDiseases.map((disease, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${disease.name}</td>
+                <td>${disease.probability}</td>
+                <td>${disease.description}</td>
+                <td>${disease.type}</td>
+                <td>${disease.symptoms.join(', ')}</td>
+              </tr>
+            `).join('')}
+          </table>
+        </div>
+      ` : ''}
+      
+      ${prescriptionResults.drugInteractions && prescriptionResults.drugInteractions.length > 0 ? `
+        <div class="section no-break">
+          <h2>DRUG INTERACTIONS</h2>
+          <table>
+            <tr>
+              <th style="width: 5%">No.</th>
+              <th style="width: 25%">Drugs</th>
+              <th style="width: 10%">Severity</th>
+              <th style="width: 30%">Effect</th>
+              <th style="width: 30%">Recommendation</th>
+            </tr>
+            ${prescriptionResults.drugInteractions.map((interaction, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${interaction.drugs.join(' + ')}</td>
+                <td>${interaction.severity}</td>
+                <td>${interaction.effect}</td>
+                <td>${interaction.recommendation}</td>
+              </tr>
+            `).join('')}
+          </table>
+        </div>
+      ` : ''}
+      
+      ${prescriptionResults.additionalNotes ? `
+        <div class="section">
+          <h2>ADDITIONAL NOTES</h2>
+          <table>
+            <tr>
+              <td>${prescriptionResults.additionalNotes}</td>
+            </tr>
+          </table>
+        </div>
+      ` : ''}
+          
+      <div class="footer">
+        <p>This report should be reviewed by a healthcare professional.</p>
+      </div>
+    </body>
+  </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    
+    setShowPrintModal(false);
+  };
+
   
 };
 export default Prescription;
