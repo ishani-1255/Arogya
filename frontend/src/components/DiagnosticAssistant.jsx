@@ -228,6 +228,92 @@ const processImage = async () => {
         setReportPreview(null);
       }
     };
+
+    // Show disease details in a modal
+  const showDiseaseDetails = (disease) => {
+    setSelectedDisease(disease);
+    setShowDiseaseModal(true);
+  };
+  
+  // Handle patient info changes
+  const handlePatientInfoChange = (e) => {
+    const { name, value } = e.target;
+    setPatientInfo({
+      ...patientInfo,
+      [name]: value
+    });
+  };
+
+  // Handle file selection for medical images
+  const handleImageFileSelect = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      // Check file type
+      if (!file.type.includes('image/')) {
+        setError("Please upload a valid image file (JPEG, PNG, etc.)");
+        return;
+      }
+      
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("File size exceeds 5MB limit. Please upload a smaller image.");
+        return;
+      }
+      
+      setMedicalImageFile(file);
+      // Create and store preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setMedicalImagePreview(previewUrl);
+      setError(null);
+    }
+  };
+  // Handle file selection
+  const handleFileSelect = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      // Check file type
+      if (!file.type.includes('image/')) {
+        setError("Please upload a valid image file (JPEG, PNG, etc.)");
+        return;
+      }
+      
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("File size exceeds 5MB limit. Please upload a smaller image.");
+        return;
+      }
+      
+      setMedicalImageFile(file);
+      // Create and store preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setMedicalImagePreview(previewUrl);
+      setError(null);
+    }
+  };
+  // Handle file selection for medical reports
+  const handleReportFileSelect = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      // Check file type
+      if (!file.type.includes('image/')) {
+        setError("Please upload a valid image file (JPEG, PNG, etc.)");
+        return;
+      }
+      
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("File size exceeds 5MB limit. Please upload a smaller image.");
+        return;
+      }
+      
+      setReportFile(file);
+      // Create and store preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setReportPreview(previewUrl);
+      setError(null);
+    }
+  };
+
     
 
 
