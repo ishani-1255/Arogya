@@ -332,24 +332,20 @@ def enrich_with_possible_diseases(prescription_data):
         
         IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. Do not include any explanations, only provide the JSON.
         """
-        
-        # Generate response using gemini-1.5-flash
+
         response = model.generate_content(prompt, generation_config={"temperature": 0.3})
-        
-        # Extract JSON from response
+
         text_response = response.text
-        
-        # Find JSON object
+
         json_start = text_response.find('{')
         json_end = text_response.rfind('}') + 1
         
         if json_start >= 0 and json_end > json_start:
             json_str = text_response[json_start:json_end]
-            # Clean up any potential formatting issues
+
             json_str = json_str.replace('```json', '').replace('```', '')
             disease_result = json.loads(json_str)
-            
-            # Add disease information to the prescription data
+
             prescription_data['possible_diseases'] = disease_result.get('possible_diseases', [])
         else:
             prescription_data['possible_diseases'] = []
@@ -365,14 +361,11 @@ def get_drug_interactions(medications):
     try:
         if not medications or len(medications) < 2:
             return []
-            
-        # Initialize Gemini 1.5 Flash model
+
         model = genai.GenerativeModel(model_name="gemini-1.5-flash")
-        
-        # Prepare medication list
+ 
         medication_names = [med['name'] for med in medications if 'name' in med and med['name']]
-        
-        # If we have fewer than 2 valid medication names, return empty list
+
         if len(medication_names) < 2:
             return []
             
@@ -403,14 +396,11 @@ def get_drug_interactions(medications):
         
         IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. Do not include any explanations, only provide the JSON.
         """
-        
-        # Generate response
+    
         response = model.generate_content(prompt, generation_config={"temperature": 0.2})
-        
-        # Extract JSON from response
+   
         text_response = response.text
-        
-        # Find JSON object
+
         json_start = text_response.find('{')
         json_end = text_response.rfind('}') + 1
         
@@ -440,6 +430,41 @@ def create_empty_result(error_message="Failed to process prescription image."):
         "possible_diseases": [],
         "additional_notes": error_message
     }
+
+@app.route('/api/process_prescription', methods=['POST'])
+def process_prescription():
+    """API endpoint to process prescription images."""
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+        
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+        
+    if file:
+
+        temp_dir = tempfile.mkdtemp()
+        try:
+            file_path = os.path.join(temp_dir, secure_filename(file.filename))
+            file.save(file_path)
+
+            result = get_prescription_information(file_path)
+
+            if 'medications' in result and len(result['medications']) > 1:
+                interactions = get_drug_interactions(result['medications'])
+                result['drug_interactions'] = interactions
+            else:
+                result['drug_interactions'] = []
+     
+            return jsonify(result)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+   
+            if os.path.exists(temp_dir):
+                import shutil
+                shutil.rmtree(temp_dir)
     
 if __name__ == "__main__":
     # Set host to 0.0.0.0 to make it accessible from outside the container
