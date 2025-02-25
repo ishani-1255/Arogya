@@ -507,6 +507,64 @@ const Prescription=() =>{
     
     setShowPrintModal(false);
   };
+  // About Modal Component
+const AboutModal = () => {
+    if (!showAboutModal) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        {/* Header */}
+        <div className="p-4 flex justify-between items-center border-b">
+          <h2 className="text-xl font-bold flex items-center">
+            <Activity className="mr-2 text-blue-600" size={20} />
+            About Arogya
+          </h2>
+          <button 
+            className="text-gray-500 hover:text-gray-700"
+            onClick={() => setShowAboutModal(false)}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        
+        {/* Content */}
+        <div className="p-4">
+          <p className="text-sm mb-4">
+          Arogya is a healthcare support tool designed to assist medical professionals and patients in analyzing prescriptions, diagnosing conditions, and detecting diseases.
+          </p>
+          
+          {/* Key Features */}
+          <h3 className="text-md font-semibold mb-2 text-blue-700 flex items-center">
+            <Clipboard className="mr-2" size={16} />
+            Key Features
+          </h3>
+          
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="bg-blue-50 p-8 rounded-lg">
+              <h4 className="font-semibold text-md mb-1 text-blue-800">Prescription Analysis</h4>
+              <p className="text-xs">Extract medication info and identify interactions.</p>
+            </div>
+            <div className="bg-blue-50 p-8 rounded-lg">
+              <h4 className="font-semibold text-md mb-1 text-blue-800">Diagnostic Assistant</h4>
+              <p className="text-xs">Analyze symptoms and suggest possible conditions.</p>
+            </div>
+            <div className="bg-blue-50 p-8 rounded-lg">
+              <h4 className="font-semibold text-md mb-1 text-blue-800">Disease Detection</h4>
+              <p className="text-xs">Early detection using AI for medical imaging.</p>
+            </div>
+            <div className="bg-blue-50 p-8 rounded-lg">
+              <h4 className="font-semibold text-md mb-1 text-blue-800">Lab Report Analysis</h4>
+              <p className="text-xs">Interpret test results and highlight abnormal values.</p>
+            </div>
+          </div>
+          
+       
+        </div>
+      </div>
+    </div>
+    );
+  };
 
   
 };
