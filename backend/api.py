@@ -536,6 +536,49 @@ def analyze_symptoms():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/analyze_medical_image', methods=['POST'])
+def analyze_medical_image_endpoint():
+    """API endpoint to analyze uploaded medical images."""
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part in the request"}), 400
+            
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+            
+        if file:
+
+            enhancements = []
+            if 'enhancements' in request.form:
+                try:
+                    enhancements = json.loads(request.form['enhancements'])
+                except Exception as e:
+                    print(f"Error parsing enhancements: {str(e)}")
+            
+
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            try:
+
+                result = analyze_medical_image(filepath, enhancements)
+                return jsonify(result)
+            except Exception as e:
+                return jsonify({"error": str(e)}), 500
+            finally:
+   
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+
+                enhanced_path = filepath.replace('.', '_enhanced.')
+                if os.path.exists(enhanced_path):
+                    os.remove(enhanced_path)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
     
 if __name__ == "__main__":
