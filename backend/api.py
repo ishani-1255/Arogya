@@ -63,8 +63,73 @@ def enhance_image(image_path, enhancements):
     except Exception as e:
         print(f"Error enhancing image: {str(e)}")
         return image_path
+    
+    def analyze_medical_image(image_path, enhancements=None):
+    """Analyze medical images using Gemini model."""
+    try:
+        # Apply enhancements if requested
+        if enhancements and len(enhancements) > 0:
+            processed_image_path = enhance_image(image_path, enhancements)
+        else:
+            processed_image_path = image_path
+            
+        # Load image
+        image = Image.open(processed_image_path)
+        
+        # Initialize Gemini model
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+        
+        prompt = """
+        You are an expert medical image analyst. Analyze the provided medical image and identify any 
+        abnormalities, findings, or areas of concern. The image could be an X-ray, MRI, CT scan, 
+        ultrasound, or other medical imaging.
+
+        Provide your analysis in a structured JSON format with the following fields:
+        1. findings: An array of findings, where each finding has:
+           - area: The anatomical area or region
+           - finding: Description of the finding
+           - confidence: A number from 1-100 indicating your confidence level
+        2. similar_cases: Estimated number of similar cases in medical literature (can be approximate)
+
+        Format your response as valid JSON following this schema:
+        
+        {
+            "findings": [
+                {
+                    "area": "string",
+                    "finding": "string",
+                    "confidence": number
+                }
+            ],
+            "similar_cases": number
+        }
+        
+        IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. 
+        Do not include any explanations outside the JSON structure.
+        """
+        
+        response = model.generate_content([prompt, image], generation_config={"temperature": 0.2})
+    
+        text_response = response.text
+        
+     
+        json_start = text_response.find('{')
+        json_end = text_response.rfind('}') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            json_str = text_response[json_start:json_end]
+           
+            json_str = json_str.replace('```json', '').replace('```', '')
+            result = json.loads(json_str)
+            return result
+        else:
+            return {"findings": [], "similar_cases": 0}
+    except Exception as e:
+        print(f"Error analyzing medical image: {str(e)}")
+        return {"findings": [], "similar_cases": 0, "error": str(e)}
+
 
 if __name__ == "__main__":
     # Set host to 0.0.0.0 to make it accessible from outside the container
     # For production, use a production WSGI server like Gunicorn
-    app.run(host='0.0.0.0', port=5001, debug=False)
+    app.run(host='0.0.0.0', port=5002, debug=False)
