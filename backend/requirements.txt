@@ -1,4 +1,4 @@
-# Core Libraries
+\# Core Libraries
 streamlit
 pandas
 pydantic
@@ -20,3 +20,11 @@ streamlit>=1.30.0
 pandas>=2.0.0
 pydantic>=1.10.8,<2.0.0
 
+flask
+flask-cors
+Pillow
+opencv-python
+numpy
+google-generativeai
+gunicorn
+werkzeug
