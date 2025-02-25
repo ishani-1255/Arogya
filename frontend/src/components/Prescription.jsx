@@ -30,7 +30,7 @@ const Prescription=() =>{
     const [prescriptionPreview, setPrescriptionPreview] = useState(null);
     const [medicalImagePreview, setMedicalImagePreview] = useState(null);
     
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002';
+    const API_URL = process.env.REACT_APP_API_URL || 'https://arogya-899z.onrender.com';
 
     // Process prescription image using the Python backend
   const processPrescription = async () => {
@@ -43,7 +43,7 @@ const Prescription=() =>{
     
     try {
       // Send the prescription image to the Python backend
-      const response = await axios.post(`http://localhost:5002/api/process_prescription`, formData, {
+      const response = await axios.post(`${API_URL}/api/process_prescription`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

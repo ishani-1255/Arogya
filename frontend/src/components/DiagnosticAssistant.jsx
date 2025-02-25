@@ -43,7 +43,7 @@ const Diagnostic=() =>{
   const [showDiseaseModal, setShowDiseaseModal] = useState(false);
   const [selectedDisease, setSelectedDisease] = useState(null);
   
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002';
+  const API_URL = process.env.REACT_APP_API_URL || 'https://arogya-899z.onrender.com';
 
   // Process symptoms
   const processSymptoms = async () => {
