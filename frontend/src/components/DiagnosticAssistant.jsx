@@ -6,9 +6,8 @@ import {
   ChevronRight, LineChart, AlertCircle, Microscope, Target, ArrowRightCircle,FileCheck,Server,Database,Cpu,Clock
 } from 'lucide-react';
 import axios from 'axios';
-import DiagnosticAssistant from './DiagnosticAssistant';
 
-const Prescription=() =>{
+const Diagnostic=() =>{
 
 };
-export default Prescription;
+export default Diagnostic;
