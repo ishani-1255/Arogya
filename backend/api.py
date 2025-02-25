@@ -717,4 +717,4 @@ def analyze_medical_report_endpoint():
 if __name__ == "__main__":
     # Set host to 0.0.0.0 to make it accessible from outside the container
     # For production, use a production WSGI server like Gunicorn
-    app.run(host='0.0.0.0', port=5002, debug=False)
+    app.run(debug=False)
