@@ -14,7 +14,7 @@ import cv2
 import io
 import random
 # Import API key (in production, use environment variables)
-from keys import GOOGLE_API_KEY
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 # Configure Google API
 genai.configure(api_key=GOOGLE_API_KEY)
