@@ -175,6 +175,14 @@ const Prescription=() =>{
     }
   };
   
+  // Handle diagnostic analysis start - missing in original code
+  const startDiagnosticAnalysis = () => {
+    if (symptoms.length === 0 && !medicalImageFile) {
+      alert("Please enter at least one symptom or upload a medical image.");
+      return;
+    }
+    processAnalysis();
+  };
   
 };
 export default Prescription;
