@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import LabValueChart from './LabValueChart';
 import { 
-  FileText, Upload, Search, X, CheckCircle, AlertTriangle, 
-  Brain, Layers, Info, Clipboard, Printer, Download,
-  Shield, Activity, Heart, ExternalLink, Calendar, RefreshCw,
-  ChevronRight, LineChart, AlertCircle, Microscope, Target, ArrowRightCircle,FileCheck,Server,Database,Cpu,Clock
+  Upload, Search, X, CheckCircle, AlertTriangle, 
+  Brain, Info, ExternalLink, RefreshCw, 
+  FileText, Activity, User, Calendar, Image as ImageIcon,
+  FileBarChart, ArrowUpDown, ThumbsUp, ThumbsDown
 } from 'lucide-react';
 import axios from 'axios';
 
