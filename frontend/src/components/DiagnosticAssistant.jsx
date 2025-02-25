@@ -44,5 +44,46 @@ const Diagnostic=() =>{
   const [selectedDisease, setSelectedDisease] = useState(null);
   
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002';
+
+  // Process symptoms
+  const processSymptoms = async () => {
+    if (symptoms.length === 0) {
+      setError("Please enter at least one symptom.");
+      return;
+    }
+    
+    setProcessing(true);
+    setError(null);
+    
+    try {
+      const symptomsData = {
+        symptoms: symptoms,
+        patientInfo: {
+          age: patientInfo.age || '',
+          gender: patientInfo.gender || '',
+          existingConditions: patientInfo.existingConditions || '',
+          userInput: symptomInput || '' // Include current user input if any
+        }
+      };
+      
+      const symptomsResponse = await axios.post(
+        `${API_URL}/api/analyze_symptoms`, 
+        symptomsData
+      );
+      
+      setDiagnosticResults(symptomsResponse.data);
+    } catch (error) {
+      console.error("Error analyzing symptoms:", error);
+      setError("Failed to analyze symptoms. Please try again. " + 
+        (error.response?.data?.error || error.message || "Unknown error"));
+    } finally {
+      setProcessing(false);
+    }
+  };
+  
+
+
+
+
 };
 export default Diagnostic;
