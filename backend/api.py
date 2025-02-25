@@ -465,6 +465,78 @@ def process_prescription():
             if os.path.exists(temp_dir):
                 import shutil
                 shutil.rmtree(temp_dir)
+
+@app.route('/api/analyze_symptoms', methods=['POST'])
+def analyze_symptoms():
+    """API endpoint to analyze symptoms and suggest possible conditions."""
+    try:
+
+        data = request.json
+        
+        if not data or 'symptoms' not in data or not data['symptoms']:
+            return jsonify({"error": "No symptoms provided"}), 400
+            
+        symptoms = data['symptoms']
+        patient_info = data.get('patientInfo', {})
+
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+        
+        prompt = f"""
+        You are an expert medical AI assistant. Based on the following symptoms, identify possible medical conditions:
+        
+        Symptoms:
+        {', '.join(symptoms)}
+        
+        Additional patient information:
+        Age: {patient_info.get('age', 'Not specified')}
+        Gender: {patient_info.get('gender', 'Not specified')}
+        Existing conditions: {patient_info.get('existingConditions', 'None')}
+        
+        Provide a list of the most probable medical conditions with the following information for each:
+        1. Condition name
+        2. Probability (high, medium, or low)
+        3. Brief description
+        4. Urgency level (emergency, urgent, routine)
+        5. Recommended actions
+        
+        Format your response as valid JSON following this schema:
+        
+        {{
+            "possible_conditions": [
+                {{
+                    "name": "string",
+                    "probability": "string",
+                    "description": "string",
+                    "urgency": "string",
+                    "matched_symptoms": ["string", "string", ...],
+                    "recommended_actions": ["string", "string", ...]
+                }}
+            ]
+        }}
+        
+        IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. Do not include any explanations, only provide the JSON.
+        """
+
+        response = model.generate_content(prompt, generation_config={"temperature": 0.3})
+
+        text_response = response.text
+
+        json_start = text_response.find('{')
+        json_end = text_response.rfind('}') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            json_str = text_response[json_start:json_end]
+        
+            json_str = json_str.replace('```json', '').replace('```', '')
+            result = json.loads(json_str)
+            
+            return jsonify(result)
+        else:
+            return jsonify({"error": "Failed to analyze symptoms"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
     
 if __name__ == "__main__":
     # Set host to 0.0.0.0 to make it accessible from outside the container
