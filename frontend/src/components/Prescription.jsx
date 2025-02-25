@@ -628,7 +628,198 @@ const AboutModal = () => {
       </div>
     );
   };
-
+  const MedicationInteractionModal = () => {
+    if (!showInteractionModal || !modalMedication) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">{modalMedication.name}</h2>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowInteractionModal(false)}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-medium text-gray-700 mb-1">Dosage</h3>
+                <p>{modalMedication.dosage}</p>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-gray-700 mb-1">Instructions</h3>
+                <p>{modalMedication.instructions}</p>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-gray-700 mb-1">Duration</h3>
+                <p>{modalMedication.quantity}</p>
+              </div>
+              
+              <div className="border-t pt-4">
+                <h3 className="font-medium text-gray-700 mb-2">Possible Side Effects</h3>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Nausea or vomiting</li>
+                  <li>Dizziness</li>
+                  <li>Drowsiness</li>
+                  <li>Headache</li>
+                  <li>Dry mouth</li>
+                </ul>
+                <p className="text-sm text-gray-500 mt-2">Note: Not all patients experience these side effects. Contact your doctor if side effects persist or worsen.</p>
+              </div>
+              
+              <div className="border-t pt-4">
+                <h3 className="font-medium text-gray-700 mb-2">Common Interactions</h3>
+                <div className="space-y-3">
+                  <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                    <p className="font-medium text-yellow-800">Alcohol</p>
+                    <p className="text-sm text-yellow-700">May increase drowsiness and dizziness. Avoid alcohol while taking this medication.</p>
+                  </div>
+                  <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+                    <p className="font-medium text-red-800">Grapefruit Juice</p>
+                    <p className="text-sm text-red-700">May increase medication levels in blood, leading to increased side effects.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-100 p-4 flex justify-end">
+            <button 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
+              onClick={() => setShowInteractionModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // Print Modal Component
+  const PrintModal = () => {
+    if (!showPrintModal) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg max-w-md w-full">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">Report Options</h2>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowPrintModal(false)}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <button 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded flex items-center justify-center"
+                onClick={printReport}
+              >
+                <Printer className="mr-2" size={20} />
+                Print Report
+              </button>
+              
+              <button 
+                className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded flex items-center justify-center"
+                onClick={downloadReport}
+              >
+                <Download className="mr-2" size={20} />
+                Download Report (.txt)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // Cancer Detection Tab Content Component
+  const CancerDetectionTab = () => {
+    return (
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold flex items-center">
+            <Microscope className="mr-2 text-red-600" size={24} />
+            Early Cancer Detection Insights
+          </h2>
+        </div>
+        
+        {/* Hero Section */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 mb-8">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-2/3 mb-6 md:mb-0 md:pr-6">
+              <h2 className="text-2xl font-bold text-blue-800 mb-3">AI-Powered Cancer Detection</h2>
+              <p className="text-gray-700 mb-4">
+                The deep learning models analyze medical images to detect early signs of cancer, potentially months before conventional methods. Early detection can significantly improve treatment outcomes and survival rates.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <span className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">75% Detection Rate</span>
+                <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">Federated Learning </span>
+                <span className="bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">Multimodal AI</span>
+              </div>
+            </div>
+            <div className="md:w-1/3">
+              <div className="bg-white p-2 rounded-lg shadow-md">
+               
+                <img 
+                  src=" https://d2jx2rerrg6sh3.cloudfront.net/image-handler/picture/2020/7/shutterstock_141299494.jpg"
+                  alt="First image (originally first)"
+                  className="h-full w-auto max-w-full object-contain"
+                />
+       
+             
+              </div>
+            </div>
+          </div>
+        </div>
+        
+       
+        
+        {/* Model Performance Metrics */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <LineChart className="mr-2 text-blue-600" size={20} />
+            Model Performance Metrics
+          </h3>
+          
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <h4 className="text-sm font-medium text-gray-500">Accuracy</h4>
+                <p className="text-2xl font-bold text-blue-700">87%</p>
+                <p className="text-xs text-gray-500 mt-1">Accuracy with Unimodal AI</p>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <h4 className="text-sm font-medium text-gray-500">Perplexity</h4>
+                <p className="text-2xl font-bold text-blue-700">83%</p>
+                <p className="text-xs text-gray-500 mt-1">Perplexity with Multimodal Llama</p>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <h4 className="text-sm font-medium text-gray-500">Scalability</h4>
+                <p className="text-2xl font-bold text-blue-700">80%</p>
+                <p className="text-xs text-gray-500 mt-1">Scalability across Federated Learning frameworks.</p>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <h4 className="text-sm font-medium text-gray-500">Ease in Processing</h4>
+                <p className="text-2xl font-bold text-green-700">70%</p>
+                <p className="text-xs text-gray-500 mt-1">Reduction in Data Processing Time</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
   
 };
