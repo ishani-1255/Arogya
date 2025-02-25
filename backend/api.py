@@ -64,7 +64,7 @@ def enhance_image(image_path, enhancements):
         print(f"Error enhancing image: {str(e)}")
         return image_path
     
-    def analyze_medical_image(image_path, enhancements=None):
+def analyze_medical_image(image_path, enhancements=None):
     """Analyze medical images using Gemini model."""
     try:
         # Apply enhancements if requested
@@ -128,6 +128,77 @@ def enhance_image(image_path, enhancements):
         print(f"Error analyzing medical image: {str(e)}")
         return {"findings": [], "similar_cases": 0, "error": str(e)}
 
+def analyze_symptoms(symptoms, patient_info=None):
+    """Analyze symptoms and suggest possible conditions."""
+    try:
+        if not symptoms:
+            return {"possible_conditions": []}
+     
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+        patient_age = patient_info.get('age', 'Not specified') if patient_info else 'Not specified'
+        patient_gender = patient_info.get('gender', 'Not specified') if patient_info else 'Not specified'
+        existing_conditions = patient_info.get('existingConditions', 'None') if patient_info else 'None'
+        
+        prompt = f"""
+        You are an expert medical AI assistant. Based on the following symptoms, identify possible medical conditions:
+        
+        Symptoms:
+        {', '.join(symptoms)}
+        
+        Additional patient information:
+        Age: {patient_age}
+        Gender: {patient_gender}
+        Existing conditions: {existing_conditions}
+        
+        Provide a list of the most probable medical conditions with the following information for each:
+        1. Condition name
+        2. Probability (High, Medium, or Low)
+        3. Brief description
+        4. Urgency level (High, Medium, Low)
+        5. Matched symptoms
+        6. Recommended actions
+        
+        Format your response as valid JSON following this schema:
+        
+        {{
+            "possible_conditions": [
+                {{
+                    "name": "string",
+                    "probability": "string",
+                    "description": "string",
+                    "urgency": "string",
+                    "matched_symptoms": ["string", "string", ...],
+                    "recommended_actions": ["string", "string", ...]
+                }}
+            ]
+        }}
+        
+        IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. 
+        Do not include any explanations, only provide the JSON. Limit to the 5 most likely conditions.
+        """
+        response = model.generate_content(prompt, generation_config={"temperature": 0.3})
+       
+        text_response = response.text
+       
+        json_start = text_response.find('{')
+        json_end = text_response.rfind('}') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            json_str = text_response[json_start:json_end]
+            json_str = json_str.replace('```json', '').replace('```', '')
+            result = json.loads(json_str)
+            return result
+        else:
+            return {"possible_conditions": [], "error": "Failed to parse response"}
+    except Exception as e:
+        print(f"Error analyzing symptoms: {str(e)}")
+        return {"possible_conditions": [], "error": str(e)}
+    
+def encode_image(image_path):
+    """Load and encode image as base64."""
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+    
 
 if __name__ == "__main__":
     # Set host to 0.0.0.0 to make it accessible from outside the container
