@@ -565,6 +565,70 @@ const AboutModal = () => {
     </div>
     );
   };
+  // Disease Modal Component
+  const DiseaseDetailModal = () => {
+    if (!showDiseaseModal || !selectedDisease) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">{selectedDisease.name}</h2>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowDiseaseModal(false)}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-medium text-gray-700 mb-1">Description</h3>
+                <p>{selectedDisease.description}</p>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-gray-700 mb-1">Type</h3>
+                <p>{selectedDisease.type}</p>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-gray-700 mb-1">Key Symptoms</h3>
+                <ul className="list-disc pl-5 space-y-1">
+                  {selectedDisease.symptoms.map((symptom, index) => (
+                    <li key={index}>{symptom}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-gray-700 mb-1">Probability</h3>
+                <div className={`inline-block px-3 py-1 rounded-full text-sm ${
+                  selectedDisease.probability === 'High' ? 'bg-red-100 text-red-700' : 
+                  selectedDisease.probability === 'Medium' ? 'bg-yellow-100 text-yellow-700' : 
+                  'bg-green-100 text-green-700'
+                }`}>
+                  {selectedDisease.probability}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-100 p-4 flex justify-end">
+            <button 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
+              onClick={() => setShowDiseaseModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
 
   
 };
