@@ -819,7 +819,170 @@ const AboutModal = () => {
               </div>
             </div>
           </div>
+        </div>{/* Metrics Image */}
+
+
+<div className="mb-8">
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+  <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md">
+    <div className="h-full bg-white flex items-center justify-center">
+      <img 
+        src="https://i.ibb.co/wF9dPW1f/Screenshot-2025-02-25-at-2-28-15-PM.png" 
+        alt="Second image (originally in middle)"
+        className="h-full w-auto max-w-full object-contain"
+      />
+    </div>
+  </div>
+  <div className="grid grid-rows-2 gap-6">
+    <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md">
+      <div className="h-full bg-white flex items-center justify-center">
+        <img 
+          src="https://i.ibb.co/RkZXdBfZ/Screenshot-2025-02-25-at-2-26-59-PM.png" 
+          alt="First image (originally first)"
+          className="h-full w-auto max-w-full object-contain"
+        />
+      </div>
+    </div>
+    
+    <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md">
+      <div className="h-full bg-white flex items-center justify-center">
+        <img 
+          src="https://i.ibb.co/wZshgD66/Screenshot-2025-02-25-at-2-27-09-PM.png" 
+          alt="Third image (originally last)"
+          className="h-full w-auto max-w-full object-contain"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{/* How It Works */}
+<div className="mb-8">
+  <h3 className="text-lg font-semibold mb-4 flex items-center">
+    <Brain className="mr-2 text-purple-600" size={20} />
+    How Our Cancer Detection Model Works
+  </h3>
+  
+  <div className="bg-gray-50 p-6 rounded-lg">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="flex flex-col items-center text-center">
+        <div className="bg-blue-100 p-4 rounded-full mb-4">
+          <Upload className="h-8 w-8 text-blue-700" />
         </div>
+        <h4 className="font-medium mb-2">Image Upload</h4>
+        <p className="text-sm text-gray-600">
+          Medical images (X-rays, CT scans, MRIs, etc.) are uploaded to our secure platform
+        </p>
+      </div>
+      
+      <div className="flex flex-col items-center text-center">
+        <div className="bg-purple-100 p-4 rounded-full mb-4">
+          <Layers className="h-8 w-8 text-purple-700" />
+        </div>
+        <h4 className="font-medium mb-2">Pre-processing</h4>
+        <p className="text-sm text-gray-600">
+          Images are enhanced and standardized for optimal analysis
+        </p>
+      </div>
+      
+      <div className="flex flex-col items-center text-center">
+        <div className="bg-indigo-100 p-4 rounded-full mb-4">
+          <Brain className="h-8 w-8 text-indigo-700" />
+        </div>
+        <h4 className="font-medium mb-2">AI Analysis</h4>
+        <p className="text-sm text-gray-600">
+          Deep learning models trained on millions of images identify potential abnormalities
+        </p>
+      </div>
+      
+      <div className="flex flex-col items-center text-center">
+        <div className="bg-green-100 p-4 rounded-full mb-4">
+          <CheckCircle className="h-8 w-8 text-green-700" />
+        </div>
+        <h4 className="font-medium mb-2">Results</h4>
+        <p className="text-sm text-gray-600">
+          Detailed reports highlight areas of concern with confidence scores
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{/* Clinical Integration */}
+<div className="mb-8">
+<h3 className="text-lg font-semibold mb-4 flex items-center">
+  <Activity className="mr-2 text-green-600" size={20} />
+  Clinical Integration
+</h3>
+
+<div className="bg-green-50 p-6 rounded-lg">
+  <p className="text-gray-700 mb-4">
+    The cancer detection models is designed to integrate seamlessly into clinical workflows. They augment, rather than replace, radiologist expertise by serving as a second set of "eyes" that never tire or lose focus.
+  </p>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+    <div className="flex items-start bg-white p-4 rounded-lg shadow-sm">
+      <div className="bg-green-100 p-2 rounded-full mr-3 mt-1">
+        <Server className="h-5 w-5 text-green-700" />
+      </div>
+      <div>
+        <h4 className="font-medium mb-1">Federated Learning</h4>
+        <p className="text-sm text-gray-600">Models trained across institutions while preserving patient privacy and data sovereignty</p>
+      </div>
+    </div>
+    
+    <div className="flex items-start bg-white p-4 rounded-lg shadow-sm">
+      <div className="bg-green-100 p-2 rounded-full mr-3 mt-1">
+        <Cpu className="h-5 w-5 text-green-700" />
+      </div>
+      <div>
+        <h4 className="font-medium mb-1">Affordable Technology</h4>
+        <p className="text-sm text-gray-600">Low-cost, high-density GPUs make AI model training and deployment more accessible</p>
+      </div>
+    </div>
+    
+    <div className="flex items-start bg-white p-4 rounded-lg shadow-sm">
+      <div className="bg-green-100 p-2 rounded-full mr-3 mt-1">
+        <Database className="h-5 w-5 text-green-700" />
+      </div>
+      <div>
+        <h4 className="font-medium mb-1">Efficient Infrastructure</h4>
+        <p className="text-sm text-gray-600">Hospitals equipped with Federated Learning Infra on top of Randomised Control Trials (RCT) data + Exascale Compute</p>
+      </div>
+    </div>
+    
+    <div className="flex items-start bg-white p-4 rounded-lg shadow-sm">
+      <div className="bg-green-100 p-2 rounded-full mr-3 mt-1">
+        <Clock className="h-5 w-5 text-green-700" />
+      </div>
+      <div>
+        <h4 className="font-medium mb-1">Timely Interventions</h4>
+        <p className="text-sm text-gray-600">Enhanced data analysis = early cancer detection = faster treatment decisions</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+{/* Disclaimer */}
+<div className="mt-8 bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800">
+  <h4 className="font-medium flex items-center mb-2">
+    <AlertCircle className="mr-2" size={18} />
+    Important Medical Disclaimer
+  </h4>
+  <p>
+    The cancer detection features are intended as a supportive tool for healthcare professionals. 
+    Our AI models should never replace professional medical evaluation, diagnosis, or treatment. 
+    Always consult with qualified healthcare providers regarding any concerning findings or medical decisions.
+  </p>
+</div>
+</div>
+);
+};
 
   
 };
