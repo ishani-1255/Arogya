@@ -199,7 +199,167 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
     
+def get_prescription_information(image_path):
+    """Process prescription images using Gemini 1.5 Flash."""
+    # Load images using PIL for Gemini API
+    image = Image.open(image_path)
+    
+    # Initialize Gemini 1.5 Flash model
+    model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+    
+    prompt = """
+    You are an expert medical transcriptionist specializing in deciphering and accurately transcribing handwritten medical prescriptions. Your role is to meticulously analyze the provided prescription images and extract all relevant information with the highest degree of precision.
 
+    Your job is to extract and accurately transcribe the following details from the provided prescription images:
+    1. Patient's full name
+    2. Patient's age (handle different formats like "42y", "42yrs", "42", "42 years")
+    3. Patient's gender
+    4. Doctor's full name
+    5. Doctor's license number
+    6. Prescription date (in YYYY-MM-DD format)
+    7. List of medications including:
+       - Medication name
+       - Dosage
+       - Frequency
+       - Duration
+    8. Additional notes or instructions
+
+    Important Instructions:
+    - Ensure that each extracted field is accurate and clear. If any information is not legible or missing, indicate it as 'Not available'.
+    - Do not guess or infer any information that is not clearly legible.
+    - Pay close attention to details like medication names, dosages, and frequencies.
+    - Format your response as valid JSON following this exact schema:
+    
+    {
+        "patient_name": "string",
+        "patient_age": integer,
+        "patient_gender": "string",
+        "doctor_name": "string",
+        "doctor_license": "string",
+        "prescription_date": "YYYY-MM-DD",
+        "medications": [
+            {
+                "name": "string",
+                "dosage": "string",
+                "frequency": "string",
+                "duration": "string"
+            }
+        ],
+        "additional_notes": "string"
+    }
+    
+    IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. Do not include any explanations, only provide the JSON.
+    """
+    
+    # Generate response using gemini-1.5-flash
+    try:
+        response = model.generate_content([prompt, image], generation_config={"temperature": 0.2})
+        
+        # Extract JSON from response
+        text_response = response.text
+        
+        # Find JSON object
+        json_start = text_response.find('{')
+        json_end = text_response.rfind('}') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            json_str = text_response[json_start:json_end]
+            # Clean up any potential formatting issues
+            json_str = json_str.replace('```json', '').replace('```', '')
+            result = json.loads(json_str)
+            
+            # Ensure patient_age is an integer
+            if 'patient_age' in result and result['patient_age'] and isinstance(result['patient_age'], str):
+                try:
+                    result['patient_age'] = int(''.join(filter(str.isdigit, result['patient_age'])))
+                except:
+                    result['patient_age'] = 0
+            
+            # Add possible diseases based on medications
+            result = enrich_with_possible_diseases(result)
+            
+            return result
+        else:
+            return create_empty_result("Failed to parse JSON from response")
+    except Exception as e:
+        return create_empty_result(f"Error calling Gemini API: {str(e)}")
+
+def enrich_with_possible_diseases(prescription_data):
+    """Enrich prescription data with possible diseases based on medications."""
+    try:
+        if 'medications' not in prescription_data or not prescription_data['medications']:
+            prescription_data['possible_diseases'] = []
+            return prescription_data
+            
+        # Initialize Gemini 1.5 Flash model for disease prediction
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+        
+        # Prepare medication list for prompt
+        medication_list = "\n".join([f"- {med['name']} {med['dosage']}" for med in prescription_data['medications']])
+        
+        prompt = f"""
+        You are an expert medical AI assistant. Based on the following list of medications prescribed to a patient, 
+        identify the most likely medical conditions/diseases that the patient might have.
+        
+        Medications:
+        {medication_list}
+        
+        Additional context (if available):
+        Patient age: {prescription_data.get('patient_age', 'Not specified')}
+        Patient gender: {prescription_data.get('patient_gender', 'Not specified')}
+        Additional notes: {prescription_data.get('additional_notes', 'None')}
+        
+        Provide a list of the most probable medical conditions/diseases with the following information for each:
+        1. Disease name
+        2. Probability (high, medium, or low)
+        3. Brief description of the condition
+        4. Whether the condition is chronic or acute
+        5. Key symptoms associated with this condition
+        
+        Format your response as valid JSON following this exact schema:
+        
+        {{
+            "possible_diseases": [
+                {{
+                    "name": "string",
+                    "probability": "string", 
+                    "description": "string",
+                    "type": "string",
+                    "symptoms": ["string", "string", ...]
+                }}
+            ]
+        }}
+        
+        IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. Do not include any explanations, only provide the JSON.
+        """
+        
+        # Generate response using gemini-1.5-flash
+        response = model.generate_content(prompt, generation_config={"temperature": 0.3})
+        
+        # Extract JSON from response
+        text_response = response.text
+        
+        # Find JSON object
+        json_start = text_response.find('{')
+        json_end = text_response.rfind('}') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            json_str = text_response[json_start:json_end]
+            # Clean up any potential formatting issues
+            json_str = json_str.replace('```json', '').replace('```', '')
+            disease_result = json.loads(json_str)
+            
+            # Add disease information to the prescription data
+            prescription_data['possible_diseases'] = disease_result.get('possible_diseases', [])
+        else:
+            prescription_data['possible_diseases'] = []
+            
+        return prescription_data
+    except Exception as e:
+        print(f"Error predicting diseases: {str(e)}")
+        prescription_data['possible_diseases'] = []
+        return prescription_data
+    
 if __name__ == "__main__":
     # Set host to 0.0.0.0 to make it accessible from outside the container
     # For production, use a production WSGI server like Gunicorn
