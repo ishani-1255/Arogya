@@ -360,6 +360,87 @@ def enrich_with_possible_diseases(prescription_data):
         prescription_data['possible_diseases'] = []
         return prescription_data
     
+def get_drug_interactions(medications):
+    """Get interactions between medications."""
+    try:
+        if not medications or len(medications) < 2:
+            return []
+            
+        # Initialize Gemini 1.5 Flash model
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+        
+        # Prepare medication list
+        medication_names = [med['name'] for med in medications if 'name' in med and med['name']]
+        
+        # If we have fewer than 2 valid medication names, return empty list
+        if len(medication_names) < 2:
+            return []
+            
+        prompt = f"""
+        You are a pharmacology expert AI. Analyze the following list of medications and identify any potential interactions between them:
+        
+        Medications:
+        {', '.join(medication_names)}
+        
+        For each potential drug interaction, provide:
+        1. The interacting drugs (pair)
+        2. Severity (mild, moderate, severe)
+        3. Effect description
+        4. Recommendation
+        
+        Format your response as valid JSON following this schema:
+        
+        {{
+            "interactions": [
+                {{
+                    "drugs": ["Drug A", "Drug B"],
+                    "severity": "string",
+                    "effect": "string",
+                    "recommendation": "string"
+                }}
+            ]
+        }}
+        
+        IMPORTANT: Your entire response must be a valid JSON object with no other text outside of it. Do not include any explanations, only provide the JSON.
+        """
+        
+        # Generate response
+        response = model.generate_content(prompt, generation_config={"temperature": 0.2})
+        
+        # Extract JSON from response
+        text_response = response.text
+        
+        # Find JSON object
+        json_start = text_response.find('{')
+        json_end = text_response.rfind('}') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            json_str = text_response[json_start:json_end]
+            # Clean up any potential formatting issues
+            json_str = json_str.replace('```json', '').replace('```', '')
+            interaction_result = json.loads(json_str)
+            
+            return interaction_result.get('interactions', [])
+        else:
+            return []
+    except Exception as e:
+        print(f"Error getting drug interactions: {str(e)}")
+        return []
+
+def create_empty_result(error_message="Failed to process prescription image."):
+    """Create empty result dictionary for error cases."""
+    return {
+        "patient_name": "Error processing prescription",
+        "patient_age": 0,
+        "patient_gender": "",
+        "doctor_name": "",
+        "doctor_license": "",
+        "prescription_date": "",
+        "medications": [],
+        "possible_diseases": [],
+        "additional_notes": error_message
+    }
+    
 if __name__ == "__main__":
     # Set host to 0.0.0.0 to make it accessible from outside the container
     # For production, use a production WSGI server like Gunicorn
