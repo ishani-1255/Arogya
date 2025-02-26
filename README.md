@@ -34,7 +34,19 @@ Arogya is a comprehensive healthcare support system that leverages advanced AI t
 - **Federated Learning Integration**: Uses distributed machine learning across institutions while preserving patient privacy
 - **Multimodal Analysis**: Combines different data types to improve detection accuracy
 - **Clinical Workflow Integration**: Seamlessly fits into existing healthcare workflows as a supplementary diagnostic tool
-![Early Cancer Analysis](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/cancer-metrics.png)  
+![Early Cancer Analysis](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/cancer-metrics.png)
+
+## Demo & Deployment
+
+### Live Application
+The project is live and deployed at: [https://arogya-roan.vercel.app/](https://arogya-roan.vercel.app/)
+
+### Test Samples
+To test the deployed application, use the test samples provided in the `test-samples` folder of the repository:
+1. Clone the repository or download the test-sample folder
+2. Upload these samples when using the corresponding features in the live application
+3. These samples are pre-validated and will demonstrate the full capabilities of each module
+
 ## Technology Stack
 
 ### Frontend
@@ -47,7 +59,6 @@ Arogya is a comprehensive healthcare support system that leverages advanced AI t
 - Google's Generative AI (Gemini 1.5 Flash) for medical text and image analysis
 - OpenCV and PIL for advanced image processing and enhancement
 - Custom LangChain pipelines for complex medical document processing
-
 
 ## Implementation Details
 
