@@ -103,7 +103,7 @@ GOOGLE_API_KEY=your_api_key
 
 5. Start the backend server
 ```bash
-python app.py
+python api.py
 ```
 
 6. Start the frontend application
