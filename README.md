@@ -1,5 +1,5 @@
 # Arogya: AI-Powered Healthcare Support System
-
+Use deployed application : https://arogya-roan.vercel.app/
 ## Overview
 
 Arogya is a comprehensive healthcare support system that leverages advanced AI technologies to assist medical professionals and patients in **analyzing prescriptions**, **diagnosing scans** , **symptoms analysis** and **medical report analysis**. The platform uses cutting-edge image processing, natural language processing, and deep learning techniques to provide accurate medical insights and improve healthcare outcomes.
