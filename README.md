@@ -2,7 +2,7 @@
 
 ## Overview
 
-Arogya is a comprehensive healthcare support system that leverages advanced AI technologies to assist medical professionals and patients in analyzing prescriptions, diagnosing conditions, and detecting diseases. The platform uses cutting-edge image processing, natural language processing, and deep learning techniques to provide accurate medical insights and improve healthcare outcomes.
+Arogya is a comprehensive healthcare support system that leverages advanced AI technologies to assist medical professionals and patients in **analyzing prescriptions**, **diagnosing scans** , **symptoms analysis** and **medical report analysis**. The platform uses cutting-edge image processing, natural language processing, and deep learning techniques to provide accurate medical insights and improve healthcare outcomes.
 
 ## Key Features
 
@@ -11,19 +11,29 @@ Arogya is a comprehensive healthcare support system that leverages advanced AI t
 - **Drug Interaction Detection**: Identifies potential harmful interactions between medications
 - **Patient & Doctor Information Recognition**: Extracts and organizes patient demographics and physician credentials
 - **Possible Disease Inference**: Analyzes prescribed medications to suggest potential underlying conditions
+![Prescription Analysis](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/Prescription-1.png)
+![Prescription Analysis](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/Prescription-2.png)
+![Prescription Analysis](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/prescription-3.png)  
 
 ### 2. Diagnostic Assistant
-- **Symptom-Based Analysis**: Evaluates symptoms to identify possible medical conditions with corresponding urgency levels
-- **Medical Image Analysis**: Processes X-rays, MRIs, and other medical imagery to detect abnormalities
-- **Lab Report Interpretation**: Analyzes lab results to identify abnormal values and provide actionable insights
-- **Image Enhancement Options**: Provides noise reduction, contrast boosting, and edge enhancement to improve medical image clarity
+1. **Symptom-Based Analysis**: Evaluates symptoms to identify possible medical conditions with corresponding urgency levels.
+![Symptom-Based Analysis](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/Symptom%20Analysis.png)
+![Symptom-Based Analysis](https://github.com/ishani-1255/Arogya/blob/main/project%20photos/symptom-analysis-result.png?raw=true)
+4. **Medical Image Analysis**: Processes X-rays, MRIs, and other medical imagery to detect abnormalities and provides noise reduction, contrast boosting, and edge enhancement to improve medical image clarity.
+![Medical Image Analysis](https://github.com/ishani-1255/Arogya/blob/main/project%20photos/image-analysis-1.png?raw=true)
+![Medical Image Analysis](https://github.com/ishani-1255/Arogya/blob/main/project%20photos/image-analysis-2.png?raw=true)
+7. **Lab Report Interpretation**: Analyzes lab results to identify abnormal values and provide actionable insights.
+![Lab Report Interpretation](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/Lab%20Analysis-1.png)
+![Lab Report Interpretation](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/lAB-2.png)
+![Lab Report Interpretation](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/Lab-3.png)
+![Lab Report Interpretation](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/Lab-4.png)
 
 ### 3. Early Cancer Detection
 - **AI-Powered Detection Models**: Implements deep learning algorithms to identify early signs of cancer from medical images
 - **Federated Learning Integration**: Uses distributed machine learning across institutions while preserving patient privacy
 - **Multimodal Analysis**: Combines different data types to improve detection accuracy
 - **Clinical Workflow Integration**: Seamlessly fits into existing healthcare workflows as a supplementary diagnostic tool
-
+![Early Cancer Analysis](https://raw.githubusercontent.com/ishani-1255/Arogya/refs/heads/main/project%20photos/cancer-metrics.png)  
 ## Technology Stack
 
 ### Frontend
@@ -37,11 +47,6 @@ Arogya is a comprehensive healthcare support system that leverages advanced AI t
 - OpenCV and PIL for advanced image processing and enhancement
 - Custom LangChain pipelines for complex medical document processing
 
-### AI & ML Components
-- **OCR Pipeline**: Custom-built OCR system optimized for medical documents and prescriptions
-- **Medical Image Processing**: Specialized algorithms for enhancing and analyzing different types of medical imagery
-- **NLP for Medical Text**: Fine-tuned language models for medical terminology extraction and analysis
-- **Vector Database Integration**: For efficient similar case retrieval and comparison
 
 ## Implementation Details
 
@@ -61,11 +66,6 @@ The system employs several AI models working in concert:
 3. **Lab Value Interpretation**: Compares values against reference ranges with consideration for patient demographics
 4. **Cross-Referencing Engine**: Validates findings across multiple knowledge sources for increased reliability
 
-### Data Privacy & Security
-- End-to-end encryption for all user data
-- Compliance with healthcare data regulations
-- Federated learning approach to minimize data exposure
-- No persistent storage of sensitive medical information
 
 ## Getting Started
 
@@ -111,23 +111,10 @@ cd ../frontend
 npm start
 ```
 
-## Future Enhancements
-
-- Integration with Electronic Health Records (EHR) systems
-- Mobile application for on-the-go medical analysis
-- Support for additional languages and regional medical practices
-- Enhanced disease progression prediction using longitudinal data
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
-
-- Medical professionals who provided expertise and validation
-- Open-source community for various libraries and tools
-- Google for access to Generative AI capabilities
-- All contributors and testers who helped improve the system
 
 ---
 
